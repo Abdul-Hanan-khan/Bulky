@@ -2,14 +2,12 @@
 
 namespace BulkyWeb.Models
 {
-    public class Category
+    public class Category11
     {
         [Key]
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
-
-        public int  DisplayOrder { get; set; }
-        public bool IsVerified { get; set; } = false;
+        public string DisplayOrder { get; set; }
     }
 }
