@@ -12,6 +12,7 @@ namespace BulkyWeb.Models
         public string Name { get; set; }
         [Required, DisplayName("Display Order"), Range(1,200, ErrorMessage ="Please Enter a Number Between 1 and 200")]
         public int  DisplayOrder { get; set; }
+        [DisplayName("Is Verified")]
         public bool IsVerified { get; set; } = false;
     }
 }
