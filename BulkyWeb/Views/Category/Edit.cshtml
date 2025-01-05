@@ -7,7 +7,7 @@
 			<hr />
 		</div>
 		<div asp-validation-summary="All" class="text-warning"></div>
-		<div class="mb-3 row">
+		<div class="mb-3 row p-1">
 			<input type="hidden" asp-for="Id" />
 			<label asp-for="Name" class="p-0"></label>
 			<input asp-for="Name" class="form-control" />
@@ -21,12 +21,22 @@
 			<span asp-validation-for="DisplayOrder" class="text-danger"> </span>
 		</div>
 
-		<div class="row">
-			<div class="col-6 col-md-3">
+		
+		<div class="mb-3 row p-1">
+			<div class="form-check">
+				<input asp-for="IsVerified" class="form-check-input alert-primary" type="checkbox"/>
+				<label asp-for="IsVerified" class="form-check-label" for="isVerified">Is Verified</label>
+			</div>
+			@* <span asp-validation-for="IsVerified" class="text-danger"></span> *@
+		</div>
+
+
+		<div class="row p-1">
+			<div class="col-6 col-md-3 p-0">
 				<button type="submit" class="btn btn-primary form-control">Update</button>
 			</div>
 
-			<div class="col-6 col-md-3">
+			<div class="col-6 col-md-3 ps-2">
 				<a asp-controller="Category" asp-action="Index" class="btn btn-outline-secondary form-control">Back to List</a>
 			</div>
 
