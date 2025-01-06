@@ -114,5 +114,26 @@ namespace BulkyWeb.Controllers
 			return RedirectToAction("Index");
 			
 		}
+
+
+		public IActionResult Search(string searchQuery)
+		{
+            List<Category> filteredCategories;
+
+            if (!searchQuery.IsNullOrEmpty())
+            {
+                filteredCategories = _db.Categories
+                    .Where(c => c.Name.Contains(searchQuery))
+                    .ToList();
+            }
+            else { 
+            filteredCategories = _db.Categories.ToList();
+            }
+
+			
+
+			return PartialView("_CategoryTable", filteredCategories); // Return partial view for the table
+		}
+
 	}
 }
