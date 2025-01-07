@@ -1,37 +1,47 @@
 ﻿@model List<Category>
 
-<div class="container">
-	<div class="row pt-4 pb-3" >
-		<div class="col-6">
-			<h2 class="text-primary">
-				Category List
-			</h2>
-		</div>
+<div class="card border shadow mt-4">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h2 class="text-white py-2">Category List</h2>
+			</div>
 
-		<div class="col-6 text-end">
-			<a asp-controller="Category" asp-action="Create" class="btn btn-primary ">
-				<i class="bi bi-plus-circle"></i> Create Category
-			</a>
-		</div>
-
-	</div>
-
-	<!-- Search Form -->
-	<div class="row pb-3">
-		<div class="col-12">
-			<form id="searchForm">
-				<input type="text" id="searchQuery" class="form-control" placeholder="Search by category name" />
-			</form>
 		</div>
 	</div>
+	<div class="card-body p-4">
+		<div class="container">
+			<div class="row pb-3">
+
+				<div class="col-12 text-end">
+					<a asp-controller="Category" asp-action="Create" class="btn btn-primary ">
+						<i class="bi bi-plus-circle"></i> Create Category
+					</a>
+				</div>
+
+			</div>
+
+			<!-- Search Form -->
+			<div class="row pb-3">
+				<div class="col-12">
+					<form id="searchForm">
+						<input type="text" id="searchQuery" class="form-control" placeholder="Search by category name" />
+					</form>
+				</div>
+			</div>
 
 
-  <!-- Table -->
-  <!-- Partial view is implemented to incorporate the realtime search via Ajax  -->
-	<div id="tableContainer">
-		@await Html.PartialAsync("_CategoryTable", Model)
+			<!-- Table -->
+			<!-- Partial view is implemented to incorporate the realtime search via Ajax  -->
+			<div id="tableContainer">
+				@await Html.PartialAsync("_CategoryTable", Model)
+			</div>
+		</div>
+
 	</div>
 </div>
+
+
 
 
 @section Scripts {
