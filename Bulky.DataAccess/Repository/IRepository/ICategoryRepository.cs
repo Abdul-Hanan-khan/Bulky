@@ -12,6 +12,6 @@ namespace Bulky.DataAccess.Repository.IRepository
 	{
 		void Update(Category category);
 		List<Category> searchCategory(string query);
-		void Save();
+		
 	}
 }
