@@ -2,7 +2,9 @@
 using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
+using Bulky.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BulkyWeb.Areas.Admin.Controllers
@@ -24,26 +26,34 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            return View();
+			IEnumerable<SelectListItem> categoryList = _unitOfWork.CategoryRepo.GetAll().Select(item => new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
+            //ViewBag.CategoryList = categoryList;
+            //ViewData["CategoryList"] = categoryList;
+
+            ProductVM productVM = new ProductVM { CategoryList = categoryList, Product = new Product()};
+
+			return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult Create(Product obj)
+        public IActionResult Create(ProductVM obj)
         {
           
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.ProductRepo.Add(obj);
+                _unitOfWork.ProductRepo.Add(obj.Product);
                 _unitOfWork.Save();
-                TempData["success"] = $"Product {obj.Title} Created Successfully";
+                TempData["success"] = $"Product {obj.Product.Title} Created Successfully";
                 return RedirectToAction("Index");
 
             }
             else
             {
-                Console.WriteLine("Server side validation is failed. Model is not Validated");
-                return View();
+                Console.WriteLine($"Server side validation is failed. Model is not Validated {ModelState.ErrorCount}");
+                obj.CategoryList = _unitOfWork.CategoryRepo.GetAll().Select(item => new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
+
+				return View(obj);
             }
 
             // do this if your controller is different
