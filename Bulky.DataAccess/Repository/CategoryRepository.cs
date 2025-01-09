@@ -14,7 +14,7 @@ namespace Bulky.DataAccess.Repository
 
         
 
-		public List<Category> searchCategory(string query)
+		public List<Category> SearchCategory(string query)
 		{
 			List<Category> filteredCategories;
 

@@ -1,10 +1,10 @@
-﻿@model List<Category>
+﻿@model List<Product>
 
-<div class="card border shadow mt-4">
+<div class="card border shadow mt-2 mb-5">
 	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
 		<div class="row">
 			<div class="col-12 text-center">
-				<h2 class="text-white py-2">Category List</h2>
+				<h2 class="text-white py-2">Product List</h2>
 			</div>
 
 		</div>
@@ -14,8 +14,8 @@
 			<div class="row pb-3">
 
 				<div class="col-12 text-end">
-					<a asp-controller="Category" asp-action="Create" class="btn btn-primary ">
-						<i class="bi bi-plus-circle"></i> Create Category
+					<a asp-controller="Product" asp-action="Create" class="btn btn-primary ">
+						<i class="bi bi-plus-circle"></i> Create Product
 					</a>
 				</div>
 
@@ -25,7 +25,7 @@
 			<div class="row pb-3">
 				<div class="col-12">
 					<form id="searchForm">
-						<input type="text" id="searchQuery" class="form-control" placeholder="Search by category name" />
+						<input type="text" id="searchQuery" class="form-control" placeholder="Search by Product name" />
 					</form>
 				</div>
 			</div>
@@ -34,7 +34,7 @@
 			<!-- Table -->
 			<!-- Partial view is implemented to incorporate the realtime search via Ajax  -->
 			<div id="tableContainer">
-				@await Html.PartialAsync("_CategoryTable", Model)
+				@await Html.PartialAsync("_ProductTable", Model)
 			</div>
 		</div>
 
@@ -50,9 +50,9 @@
 			$('#searchQuery').on('input', function () {
 				const query = $(this).val();
 				$.ajax({
-					url: '/Admin/Category/Search',
+					url: '/Admin/Product/Search',
 					type: 'GET',
-					data: { searchQuery: query,},
+					data: { searchQuery: query },
 					success: function (result) {
 						$('#tableContainer').html(result);
 					}
