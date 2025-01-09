@@ -8,18 +8,18 @@ using Microsoft.IdentityModel.Tokens;
 namespace BulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class CategoryController : Controller
+    public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
         public IActionResult Index()
         {
-            List<Category> objCategoriesList = _unitOfWork.CategoryRepo.GetAll().ToList();
+            List<Product> objProductList = _unitOfWork.ProductRepo.GetAll().ToList();
 
-            return View(objCategoriesList);
+            return View(objProductList);
         }
 
         public IActionResult Create()
@@ -28,18 +28,15 @@ namespace BulkyWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category obj)
+        public IActionResult Create(Product obj)
         {
-            if (!obj.Name.IsNullOrEmpty() && !obj.DisplayOrder.ToString().IsNullOrEmpty() && obj.Name.ToLower() == obj.DisplayOrder.ToString().ToLower())
-            {
-                ModelState.AddModelError("name", "Category Name and Display Order Can't Have Same Value");
-            }
+          
 
             if (ModelState.IsValid)
             {
-                _unitOfWork.CategoryRepo.Add(obj);
+                _unitOfWork.ProductRepo.Add(obj);
                 _unitOfWork.Save();
-                TempData["success"] = $"Category {obj.Name} Created Successfully";
+                TempData["success"] = $"Product {obj.Title} Created Successfully";
                 return RedirectToAction("Index");
 
             }
@@ -60,28 +57,28 @@ namespace BulkyWeb.Areas.Admin.Controllers
             //Category? categoryFromDb1 = _db.Categories.Where(u => u.Id == id).FirstOrDefault();
 
             //Category? categoryFromDb = _db.Categories.FirstOrDefault(u=>u.Id == id);
-            Category? categoryFromDb = _unitOfWork.CategoryRepo.Get(u => u.Id == id);
+            Product? productFromDb = _unitOfWork.ProductRepo.Get(u => u.Id == id);
             if (id == null)
             {
                 return NotFound();
             }
 
-            if (categoryFromDb == null)
+            if (productFromDb == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFromDb);
+            return View(productFromDb);
         }
 
         [HttpPost]
-        public IActionResult Edit(Category obj)
+        public IActionResult Edit(Product obj)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.CategoryRepo.Update(obj);
+                _unitOfWork.ProductRepo.Update(obj);
                 _unitOfWork.Save();
-                TempData["success"] = $"Category {obj.Name} Updated Successfully";
+                TempData["success"] = $"Product {obj.Title} Updated Successfully";
 
                 return RedirectToAction("Index");
             }
@@ -96,32 +93,32 @@ namespace BulkyWeb.Areas.Admin.Controllers
             //Category category = _db.Categories.Find(id);
             //Category? categoryFromDb1 = _db.Categories.Where(u => u.Id == id).FirstOrDefault();
 
-            Category? categoryFromDb = _unitOfWork.CategoryRepo.Get(u => u.Id == id);
+            Product? prouductFromDb = _unitOfWork.ProductRepo.Get(u => u.Id == id);
             if (id == null)
             {
                 return NotFound();
             }
 
-            if (categoryFromDb == null)
+            if (prouductFromDb == null)
             {
                 return NotFound();
             }
 
-            return View(categoryFromDb);
+            return View(prouductFromDb);
         }
 
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePost(int? id)
         {
-            Category? obj = _unitOfWork.CategoryRepo.Get(u => u.Id == id);
+            Product? obj = _unitOfWork.ProductRepo.Get(u => u.Id == id);
 
             if (obj == null)
             {
                 return NotFound();
             }
-            _unitOfWork.CategoryRepo.Remove(obj);
+            _unitOfWork.ProductRepo.Remove(obj);
             _unitOfWork.Save();
-            TempData["success"] = $"Category {obj.Name} Deleted Successfully";
+            TempData["success"] = $"Product {obj.Title} Deleted Successfully";
 
             return RedirectToAction("Index");
 
@@ -130,9 +127,9 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
         public IActionResult Search(string searchQuery)
         {
-            List<Category> filteredCategories;
+            List<Product> filteredProducts;
 
-            filteredCategories = _unitOfWork.CategoryRepo.SearchCategory(searchQuery);
+            filteredProducts = _unitOfWork.ProductRepo.SearchProduct(searchQuery);
 
             //if (!searchQuery.IsNullOrEmpty())
             //{
@@ -147,7 +144,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
 
 
-            return PartialView("_CategoryTable", filteredCategories); // Return partial view for the table
+            return PartialView("_ProductTable", filteredProducts); // Return partial view for the table
         }
 
     }
