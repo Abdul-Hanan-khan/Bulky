@@ -6,10 +6,11 @@
             <tr>
                 <th style="border: 1px solid #dee2e6;">Title</th>
                 <th style="border: 1px solid #dee2e6;">ISBN</th>
-                <th style="border: 1px solid #dee2e6;">Price</th>
+                <th style="border: 1px solid #dee2e6;" class="text-center">Price</th>
                 <th style="border: 1px solid #dee2e6;">Author</th>
-                <th style="border: 1px solid #dee2e6;">Category</th>
-                <th></th>
+                <th style="border: 1px solid #dee2e6;" class="text-center">Category</th>
+                <th style="border: 1px solid #dee2e6;" class="text-center">Actions</th>
+        
             </tr>
         </thead>
         <tbody>
@@ -20,11 +21,11 @@
                     <tr>
                         <td style="border: 1px solid #dee2e6;">@obj.Title</td>
                         <td style="border: 1px solid #dee2e6;">@obj.ISBN</td>
-                        <td style="border: 1px solid #dee2e6;">@obj.Price</td>
+                        <td style="border: 1px solid #dee2e6;" class="text-center">@obj.Price</td>
                         <td style="border: 1px solid #dee2e6;">@obj.Author</td>
-                        <td style="border: 1px solid #dee2e6;"></td>
+                        <td style="border: 1px solid #dee2e6;" class="text-center">@obj.Category.Name</td>
 
-                        <td style="border: 1px solid #dee2e6;">
+                        <td style="border: 1px solid #dee2e6;" class="text-center">
                             <div class="w-75 btn-group" role="group">
                                 <a asp-controller="Product" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
                                     <i class="bi bi-pencil-square"></i> Edit
@@ -36,7 +37,7 @@
                         </td>
                     </tr>
                 }
-            }
+            } 
             else
             {
                 <tr>

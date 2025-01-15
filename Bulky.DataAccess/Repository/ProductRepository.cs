@@ -16,22 +16,7 @@ namespace Bulky.DataAccess.Repository
         {
             _db = db;
         }
-        public List<Product> SearchProduct(string query)
-        {
-            List<Product> filteredProducts;
-
-            if (query != "" && query != null)
-            {
-                filteredProducts = _db.Products
-                    .Where(c => c.Title.Contains(query))
-                    .ToList();
-            }
-            else
-            {
-                filteredProducts = _db.Products.ToList();
-            }
-            return filteredProducts;
-        }
+       
 
         public void Update(Product product)
         {

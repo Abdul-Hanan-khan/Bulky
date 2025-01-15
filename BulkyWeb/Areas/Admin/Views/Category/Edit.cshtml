@@ -11,9 +11,9 @@
 	</div>
 	<div class="card-body p-4">
 		<form method="post">
-			
-				
-				<div asp-validation-summary="All" class="text-warning"></div>
+
+
+			<div asp-validation-summary="All" class="text-warning"></div>
 			<div class="form-floating py-2 col-12 ">
 				<input asp-for="Name" class="form-control border-0 shadow" />
 				<label asp-for="Name" class="fw-semibold pt-4"></label>
@@ -29,26 +29,26 @@
 			</div>
 
 
-				<div class="mb-3 row p-1">
-					<div class="form-check">
-						<input asp-for="IsVerified" class="form-check-input alert-primary" type="checkbox" />
-						<label asp-for="IsVerified" class="form-check-label" for="isVerified">Is Verified</label>
-					</div>
-					@* <span asp-validation-for="IsVerified" class="text-danger"></span> *@
+			<div class="mb-3 row p-1">
+				<div class="form-check">
+					<input asp-for="IsVerified" class="form-check-input alert-primary" type="checkbox" />
+					<label asp-for="IsVerified" class="form-check-label" for="isVerified">Is Verified</label>
+				</div>
+				@* <span asp-validation-for="IsVerified" class="text-danger"></span> *@
+			</div>
+
+
+			<div class="row p-1">
+				<div class="col-6 col-md-3 p-0">
+					<button type="submit" class="btn btn-primary form-control">Update</button>
 				</div>
 
-
-				<div class="row p-1">
-					<div class="col-6 col-md-3 p-0">
-						<button type="submit" class="btn btn-primary form-control">Update</button>
-					</div>
-
-					<div class="col-6 col-md-3 ps-2">
-						<a asp-controller="Category" asp-action="Index" class="btn btn-outline-secondary form-control">Back to List</a>
-					</div>
-
+				<div class="col-6 col-md-3 ps-2">
+					<a asp-controller="Category" asp-action="Index" class="btn btn-outline-secondary form-control">Back to List</a>
 				</div>
-			
+
+			</div>
+
 		</form>
 	</div>
 </div>
