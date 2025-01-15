@@ -537,3 +537,26 @@ bg-success {
         background-color: #578553;
         border-color: #578553;
     }
+
+
+/* Style the scrollbar track */
+::-webkit-scrollbar {
+    width: 14px; /* Set the width of the scrollbar */
+}
+
+/* Style the scrollbar handle */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #325d88, #325d88); /* Fancy gradient */
+    border-radius: 6px; /* Rounded corners */
+}
+
+    /* Optional: Hover effect */
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(45deg, #0056b3, #4a2a73);
+    }
+
+/* Style the scrollbar background */
+::-webkit-scrollbar-track {
+    background: #f8f9fa; /* Light gray background */
+    border-radius: 6px; /* Rounded corners */
+}

@@ -1,4 +1,4 @@
-﻿@model List<Product>
+﻿
 
 <div class="card border shadow mt-2 mb-5">
 	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
@@ -14,7 +14,7 @@
 			<div class="row pb-3">
 
 				<div class="col-12 text-end">
-					<a asp-controller="Product" asp-action="Create" class="btn btn-primary ">
+					<a asp-controller="Product" asp-action="Upsert" class="btn btn-primary ">
 						<i class="bi bi-plus-circle"></i> Create Product
 					</a>
 				</div>
@@ -22,20 +22,37 @@
 			</div>
 
 			<!-- Search Form -->
-			<div class="row pb-3">
+			@* <div class="row pb-3">
 				<div class="col-12">
 					<form id="searchForm">
 						<input type="text" id="searchQuery" class="form-control" placeholder="Search by Product name" />
 					</form>
 				</div>
-			</div>
+			</div> *@
 
 
 			<!-- Table -->
 			<!-- Partial view is implemented to incorporate the realtime search via Ajax  -->
-			<div id="tableContainer">
+			@* <div id="tableContainer">
 				@await Html.PartialAsync("_ProductTable", Model)
-			</div>
+			</div> *@
+
+
+			<table id="tblData" class="table table-bordered table-striped">
+				<thead >
+					<tr>
+						<th style="border: 1px solid #dee2e6;">Title</th>
+						<th style="border: 1px solid #dee2e6;">ISBN</th>
+						<th style="border: 1px solid #dee2e6;" class="text-center">Price</th>
+						<th style="border: 1px solid #dee2e6;">Author</th>
+						<th style="border: 1px solid #dee2e6;" class="text-center">Category</th>
+						<th></th>
+
+					</tr>
+				</thead>
+
+			</table>
+
 		</div>
 
 	</div>
@@ -45,19 +62,22 @@
 
 
 @section Scripts {
-	<script>
-		$(document).ready(function () {
-			$('#searchQuery').on('input', function () {
-				const query = $(this).val();
-				$.ajax({
-					url: '/Admin/Product/Search',
-					type: 'GET',
-					data: { searchQuery: query },
-					success: function (result) {
-						$('#tableContainer').html(result);
-					}
-				});
+
+	<script src="~/js/product.js"></script>
+}
+
+@* <script>
+	$(document).ready(function () {
+		$('#searchQuery').on('input', function () {
+			const query = $(this).val();
+			$.ajax({
+				url: '/Admin/Product/Search',
+				type: 'GET',
+				data: { searchQuery: query },
+				success: function (result) {
+					$('#tableContainer').html(result);
+				}
 			});
 		});
-	</script>
-}
+	});
+</script> *@
