@@ -16,6 +16,7 @@ namespace Bulky.DataAccess.Data
         public DbSet<Category> Categories { get; set; } // this line of code will create table in db when we hit add-migration command with fields specefied in category model
         
         public DbSet<Product> Products { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
