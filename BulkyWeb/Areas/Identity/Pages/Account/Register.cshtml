@@ -23,7 +23,7 @@
 						<label asp-for="Input.Email" class="ms-2 text-muted">Email</label>
 						<span asp-validation-for="Input.Email" class="text-danger"></span>
 					</div>
-					
+
 					<div class="form-floating mb-3 col-md-6">
 						<input asp-for="Input.applicationUser.Name" class="form-control" placeholder="Name" />
 						<label asp-for="Input.applicationUser.Name" class="ms-2 text-muted">Name</label>
@@ -36,7 +36,7 @@
 					</div>
 					<div class="form-floating mb-3 col-md-6">
 						<input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-						<label asp-for="Input.ConfirmPassword"class="ms-2 text-muted">Confirm Password</label>
+						<label asp-for="Input.ConfirmPassword" class="ms-2 text-muted">Confirm Password</label>
 						<span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
 					</div>
 					<div class="form-floating mb-3 col-md-6">
@@ -45,13 +45,13 @@
 						<span asp-validation-for="Input.applicationUser.Country" class="text-danger"></span>
 					</div>
 
-						<div class="form-floating mb-3 col-md-6">
+					<div class="form-floating mb-3 col-md-6">
 						<input asp-for="Input.applicationUser.City" class="form-control" placeholder="City" />
 						<label asp-for="Input.applicationUser.City" class="ms-2 text-muted">City</label>
 						<span asp-validation-for="Input.applicationUser.City" class="text-danger"></span>
 					</div>
 
-						<div class="form-floating mb-3 col-md-6">
+					<div class="form-floating mb-3 col-md-6">
 						<input asp-for="Input.applicationUser.State" class="form-control" placeholder="State" />
 						<label asp-for="Input.applicationUser.State" class="ms-2 text-muted">State</label>
 						<span asp-validation-for="Input.applicationUser.State" class="text-danger"></span>
@@ -68,31 +68,40 @@
 						<span asp-validation-for="Input.applicationUser.Address" class="text-danger"></span>
 					</div>
 					<div class="form-floating mb-3 col-md-6">
-						<input asp-for="Input.applicationUser.PhoneNumber" class="form-control"  placeholder="Phone Number" />
+						<input asp-for="Input.applicationUser.PhoneNumber" class="form-control" placeholder="Phone Number" />
 						<label asp-for="Input.applicationUser.PhoneNumber" class="ms-2 text-muted">Phone Number</label>
 						<span asp-validation-for="Input.applicationUser.PhoneNumber" class="text-danger"></span>
 					</div>
-					
-					<div class="col-md-6">
-						Gender :
-						<div class="form-check border rounded-1 col-md-2 mt-1 form-check-inline">
-							<input class="form-check-input " type="radio" asp-for="Input.applicationUser.Gender" value="Male" id="male" />
+
+
+					<div class="form-floating mb-3 col-md-6" id="input_role">
+						<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+							<option disabled selected>--Selct Role-- </option>
+						</select>
+					</div>
+
+					<div class="form-floating mb-3 col-md-6" id="input_company" style="display:none;">
+						<select asp-for="Input.applicationUser.CompanyId" asp-items="@Model.Input.CompanyList" class="form-select">
+							<option disabled selected>-Selct Company--</option>
+						</select>
+					</div>
+
+					<div class=" row col-md-6 mb-3 align-content-center" >
+						<div  class="col-md-2 ">
+							Gender:
+						</div>
+						<div class="form-check  rounded-1 col-md-2  ms-4 form-check-inline">
+							<input class="form-check-input "type="radio" checked asp-for="Input.applicationUser.Gender" value="Male" id="male" />
 							<label class="form-check-label" for="male">Male</label>
 						</div>
-						<div class="form-check border rounded-1 col-md-2 mt-1 form-check-inline">
+						<div class="form-check rounded-1 col-md-2  form-check-inline">
 							<input class="form-check-input" type="radio" asp-for="Input.applicationUser.Gender" value="Female" id="female" />
 							<label class="form-check-label" for="female">Female</label>
 						</div>
-						<div class="form-check border rounded-1 col-md-2 mt-1 form-check-inline justify-content-center">
+						<div class="form-check  rounded-1 col-md-2  form-check-inline justify-content-center">
 							<input class="form-check-input ps-1" type="radio" asp-for="Input.applicationUser.Gender" value="Other" id="other" />
 							<label class="form-check-label" for="other">Other</label>
 						</div>
-					</div>
-
-					<div class="form-floating mb-3 col-md-6">
-						<select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
-							<option disabled selected>---Selct Role--- </option>
-						</select>
 					</div>
 					<div class="co-12 mt-1">
 						<button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
@@ -105,7 +114,7 @@
 			<div class="col-md-12">
 				<section>
 					<h3>Use another service to register.</h3>
-					
+
 					@{
 						if ((Model.ExternalLogins?.Count ?? 0) == 0)
 						{
@@ -142,4 +151,19 @@
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	<script>
+		// $(document).ready(function () { });
+		$(document).ready(function () {
+			$("#input_role").change(function () {
+				var selection = $("#input_role Option:Selected").text();
+				if (selection == "@Bulky.Utilities.SD.Role_Company") {
+					$("#input_company").show();
+				} else {
+					$("#input_company").hide();
+
+				}
+			})
+		})
+	</script>
 }
+
