@@ -1,0 +1,67 @@
+﻿
+
+<div class="card border shadow mt-2 mb-5">
+	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
+		<div class="row">
+			<div class="col-12 text-center">
+				<h2 class="text-white py-2">Company List</h2>
+			</div>
+
+		</div>
+	</div>
+	<div class="card-body p-4">
+		<div class="container">
+			<div class="row pb-3">
+
+				<div class="col-12 text-end">
+					<a asp-controller="Company" asp-action="Upsert" class="btn btn-primary ">
+						<i class="bi bi-plus-circle"></i> Create Company
+					</a>
+				</div>
+
+			</div>
+
+
+			<table id="tblData" class="table table-bordered table-striped">
+				<thead >
+					<tr>
+						<th style="border: 1px solid #dee2e6;">Name</th>
+						<th style="border: 1px solid #dee2e6;">Address</th>
+						<th style="border: 1px solid #dee2e6;">City</th>
+						<th style="border: 1px solid #dee2e6;">State</th>
+						<th style="border: 1px solid #dee2e6;">Phone Number</th>
+						<th></th>
+
+					</tr>
+				</thead>
+
+			</table>
+
+		</div>
+
+	</div>
+</div>
+
+
+
+
+@section Scripts {
+
+	<script src="~/js/company.js"></script>
+}
+
+@* <script>
+	$(document).ready(function () {
+		$('#searchQuery').on('input', function () {
+			const query = $(this).val();
+			$.ajax({
+				url: '/Admin/Product/Search',
+				type: 'GET',
+				data: { searchQuery: query },
+				success: function (result) {
+					$('#tableContainer').html(result);
+				}
+			});
+		});
+	});
+</script> *@
