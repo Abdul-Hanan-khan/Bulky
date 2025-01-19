@@ -34,7 +34,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
             if (claimsIdentity.IsAuthenticated)
             {
                 var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == id && u.ApplicationUserId == userID));
+                ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == id && u.ApplicationUserId == userID && !u.IsCartClosed));
                 if (existingProudctInCart != null)
                 {
                     count = existingProudctInCart.Count;
@@ -66,7 +66,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
             var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             cart.ApplicationUserId = userID;
 
-            ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == cart.ProductId && u.ApplicationUserId == cart.ApplicationUserId));
+            ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == cart.ProductId && u.ApplicationUserId == cart.ApplicationUserId && !u.IsCartClosed));
 
             if (existingProudctInCart != null)
             {
@@ -96,7 +96,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
             var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
 
-            ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == productId && u.ApplicationUserId == userID));
+            ShoppingCart existingProudctInCart = _unitOfWork.ShoppingCartRepo.Get(u => (u.ProductId == productId && u.ApplicationUserId == userID && !u.IsCartClosed));
 
 
             _unitOfWork.ShoppingCartRepo.Remove(existingProudctInCart);
