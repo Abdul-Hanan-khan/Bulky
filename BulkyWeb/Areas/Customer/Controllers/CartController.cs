@@ -37,39 +37,97 @@ namespace BulkyWeb.Areas.Customer.Controllers
         }
 
 
-        public IActionResult plus(int cartId) {
-            var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u=>u.Id == cartId);
-            cartFromDb.Count += 1;
-            _unitOfWork.ShoppingCartRepo.Update(cartFromDb);
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
-        }
-        public IActionResult minus(int cartId) {
-            var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u=>u.Id == cartId);
-
-            if (cartFromDb.Count == 1)
-            {
-                _unitOfWork.ShoppingCartRepo.Remove(cartFromDb);
-            }
-            else {
-                cartFromDb.Count -= 1;
-                _unitOfWork.ShoppingCartRepo.Update(cartFromDb);
-                
-            }
-
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
-        }    
-        public IActionResult remove(int cartId) {
-            var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u=>u.Id == cartId);
-            
-            _unitOfWork.ShoppingCartRepo.Remove(cartFromDb);
-            _unitOfWork.Save();
-            return RedirectToAction(nameof(Index));
-        }
+		public IActionResult Summary ()  {
+			return View();
+		}
 
 
-        private double getPriceBasedOnQuantity(ShoppingCart cartItem) {
+		[HttpPost]
+		public IActionResult Plus(int cartId)
+		{
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId);
+			if (cartFromDb == null)
+			{
+				return Json(new { success = false, message = "Item not found" });
+			}
+
+			cartFromDb.Count += 1;
+			_unitOfWork.ShoppingCartRepo.Update(cartFromDb);
+			_unitOfWork.Save();
+
+			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId,
+				includeProperties: "Product"
+			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
+
+			return Json(new
+			{
+				success = true,
+				updatedCount = cartFromDb.Count,
+				updatedTotal = updatedCartTotal
+			});
+		}
+
+		[HttpPost]
+		public IActionResult Minus(int cartId)
+		{
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId);
+			if (cartFromDb == null)
+			{
+				return Json(new { success = false, message = "Item not found" });
+			}
+
+			if (cartFromDb.Count == 1)
+			{
+				_unitOfWork.ShoppingCartRepo.Remove(cartFromDb);
+			}
+			else
+			{
+				cartFromDb.Count -= 1;
+				_unitOfWork.ShoppingCartRepo.Update(cartFromDb);
+			}
+			_unitOfWork.Save();
+
+			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId,
+				includeProperties: "Product"
+			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
+
+			return Json(new
+			{
+				success = true,
+				updatedCount = cartFromDb.Count,
+				updatedTotal = updatedCartTotal
+			});
+		}
+
+		[HttpPost]
+		public IActionResult Remove(int cartId)
+		{
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId);
+			if (cartFromDb == null)
+			{
+				return Json(new { success = false, message = "Item not found" });
+			}
+
+			_unitOfWork.ShoppingCartRepo.Remove(cartFromDb);
+			_unitOfWork.Save();
+
+			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId,
+				includeProperties: "Product"
+			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
+
+			return Json(new
+			{
+				success = true,
+				updatedTotal = updatedCartTotal
+			});
+		}
+
+
+
+		private double getPriceBasedOnQuantity(ShoppingCart cartItem) {
             if (cartItem.Count <= 50)
             {
                 return cartItem.Product.Price;
