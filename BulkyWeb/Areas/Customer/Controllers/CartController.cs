@@ -1,44 +1,47 @@
 ﻿using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
 using Bulky.Models.ViewModels;
+using Bulky.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace BulkyWeb.Areas.Customer.Controllers
 {
-    [Area("Customer")]
-    [Authorize]
-    public class CartController : Controller
-    {
-        private readonly IUnitOfWork _unitOfWork;
+	[Area("Customer")]
+	[Authorize]
+	public class CartController : Controller
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		[BindProperty]
+		public ShoppingCartVM ShoppingCartVM { get; set; }
 
-        public ShoppingCartVM  ShoppingCartVM { get; set; }
-
-        public CartController(IUnitOfWork unitOfWork) {
-            _unitOfWork = unitOfWork;   
-        }
-        public IActionResult Index()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+		public CartController(IUnitOfWork unitOfWork)
+		{
+			_unitOfWork = unitOfWork;
+		}
+		public IActionResult Index()
+		{
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 			ShoppingCartVM = new ShoppingCartVM
 			{
 				ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product"),
 				OrderHeader = new OrderHeader()
 			};
 
-            foreach (var cart in ShoppingCartVM.ShoppingCartList)
-            {
-                cart.Price = getPriceBasedOnQuantity(cart);
-                ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
-            }
+			foreach (var cart in ShoppingCartVM.ShoppingCartList)
+			{
+				cart.Price = getPriceBasedOnQuantity(cart);
+				ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+			}
 
-            return View(ShoppingCartVM);
-        }
+			return View(ShoppingCartVM);
+		}
 
 
-		public IActionResult Summary ()  {
+		public IActionResult Summary()
+		{
 
 			var claimsIdentity = (ClaimsIdentity)User.Identity;
 			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -48,7 +51,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 				OrderHeader = new OrderHeader()
 			};
 
-			ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUserRepo.Get(u=>u.Id == userID,includeProperties:"Company");
+			ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUserRepo.Get(u => u.Id == userID, includeProperties: "Company");
 
 			ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
 			ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
@@ -67,6 +70,59 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 
 			return View(ShoppingCartVM);
+		}
+		[HttpPost]
+		[ActionName("Summary")]
+		public IActionResult SummarPOST()
+		{
+
+			var claimsIdentity = (ClaimsIdentity)User.Identity;
+			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+			ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product");
+
+			ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
+			ShoppingCartVM.OrderHeader.ApplicationUserId = userID;
+			//ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUserRepo.Get(u=>u.Id == userID,includeProperties:"Company");
+
+
+
+			foreach (var cart in ShoppingCartVM.ShoppingCartList)
+			{
+				cart.Price = getPriceBasedOnQuantity(cart);
+				ShoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
+			}
+
+			if (ShoppingCartVM.OrderHeader.ApplicationUser.CompanyId.GetValueOrDefault() == 0)
+			{
+				// regular customer account. send him to payment gateway
+				ShoppingCartVM.OrderHeader.PaymentStatus = SD.Payment_Status_Pending;
+				ShoppingCartVM.OrderHeader.OrderStatus= SD.Status_Pending;
+			}
+			else
+			{
+				// it is a company 
+				ShoppingCartVM.OrderHeader.PaymentStatus = SD.Payment_Status_DelayedPayment;
+				ShoppingCartVM.OrderHeader.OrderStatus = SD.Status_Approved;
+			}
+
+			_unitOfWork.OrderHeaderRepo.Add(ShoppingCartVM.OrderHeader);
+			_unitOfWork.Save();
+
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
+            {
+				OrderDetail orderDetail = new OrderDetail
+				{
+					ProductId = cart.ProductId,
+					OrderHeaderId = ShoppingCartVM.OrderHeader.Id,
+					Price=cart.Price,
+					Count=cart.Count,
+
+				};
+				_unitOfWork.OrderDetailRepo.Add(orderDetail);
+				_unitOfWork.Save();
+            }
+
+            return View(ShoppingCartVM);
 		}
 
 
@@ -155,20 +211,23 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 
 
-		private double getPriceBasedOnQuantity(ShoppingCart cartItem) {
-            if (cartItem.Count <= 50)
-            {
-                return cartItem.Product.Price;
-            }
-            else {
-                if (cartItem.Count <= 100)
-                {
-                    return cartItem.Product.Price50;
-                }
-                else {
-                    return cartItem.Product.Price100;
-                }
-            }
-        }
-    }
+		private double getPriceBasedOnQuantity(ShoppingCart cartItem)
+		{
+			if (cartItem.Count <= 50)
+			{
+				return cartItem.Product.Price;
+			}
+			else
+			{
+				if (cartItem.Count <= 100)
+				{
+					return cartItem.Product.Price50;
+				}
+				else
+				{
+					return cartItem.Product.Price100;
+				}
+			}
+		}
+	}
 }
