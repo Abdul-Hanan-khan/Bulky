@@ -37,7 +37,7 @@ namespace Bulky.DataAccess.Repository
 				}
 				if (!string.IsNullOrEmpty(paymentIntentId)) {
 					orderFromDb.PaymentIntentId= paymentIntentId;
-					orderFromDb.OrderDate = DateTime.Now;
+					orderFromDb.PaymentDate = DateTime.Now;
 				}
 			}
 

@@ -29,7 +29,7 @@ namespace Bulky.Models
         [NotMapped]
         public double  Price { get; set; }
 
-        public bool IsCartClosed { get; set; }
+        //public bool IsCartClosed { get; set; }
 
 
     }

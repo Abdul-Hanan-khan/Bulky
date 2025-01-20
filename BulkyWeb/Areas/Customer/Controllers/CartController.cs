@@ -5,6 +5,7 @@ using Bulky.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace BulkyWeb.Areas.Customer.Controllers
@@ -27,7 +28,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 			ShoppingCartVM = new ShoppingCartVM
 			{
-				ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID && !u.IsCartClosed, includeProperties: "Product"),
+				ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product"),
 				OrderHeader = new OrderHeader()
 			};
 
@@ -48,7 +49,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 			ShoppingCartVM = new ShoppingCartVM
 			{
-				ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID && !u.IsCartClosed, includeProperties: "Product"),
+				ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product"),
 				OrderHeader = new OrderHeader()
 			};
 
@@ -79,7 +80,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 			var claimsIdentity = (ClaimsIdentity)User.Identity;
 			var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-			ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID && !u.IsCartClosed	, includeProperties: "Product");
+			ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID 	, includeProperties: "Product");
 
 			ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
 			ShoppingCartVM.OrderHeader.ApplicationUserId = userID;
@@ -120,7 +121,6 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
 				};
 				_unitOfWork.OrderDetailRepo.Add(orderDetail);
-				cart.IsCartClosed = true;
 				_unitOfWork.ShoppingCartRepo.Update(cart);
 				_unitOfWork.Save();
             }
@@ -177,13 +177,30 @@ namespace BulkyWeb.Areas.Customer.Controllers
 		}
 
 		public IActionResult OrderConfirmation(int id) {
+			OrderHeader orderHeader = _unitOfWork.OrderHeaderRepo.Get(u=>u.Id == id, includeProperties:"ApplicationUser");
+			if (orderHeader.PaymentStatus != SD.Payment_Status_DelayedPayment) {
+				// regular customer payemnt
+				var service = new SessionService();
+				Session session = service.Get(orderHeader.SessionId);
+				if (session.PaymentStatus.ToLower() == "paid") {
+					_unitOfWork.OrderHeaderRepo.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
+					_unitOfWork.OrderHeaderRepo.UpdateStatus(id, SD.Status_Approved, SD.Payment_Status_Approved);
+					_unitOfWork.Save();
+
+				}
+			}
+
+			List<ShoppingCart> shoppingCartsList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
+			_unitOfWork.ShoppingCartRepo.RemoveRange(shoppingCartsList);
+			_unitOfWork.Save();
+
 			return View(id);
 		}
 
 		[HttpPost]
 		public IActionResult Plus(int cartId)
 		{
-			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId && !u.IsCartClosed);
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId);
 			if (cartFromDb == null)
 			{
 				return Json(new { success = false, message = "Item not found" });
@@ -194,7 +211,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			_unitOfWork.Save();
 
 			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
-				u => u.ApplicationUserId == cartFromDb.ApplicationUserId && !u.IsCartClosed,
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId ,
 				
 				includeProperties: "Product"
 			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
@@ -210,7 +227,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 		[HttpPost]
 		public IActionResult Minus(int cartId)
 		{
-			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId && !u.IsCartClosed);
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId );
 			if (cartFromDb == null)
 			{
 				return Json(new { success = false, message = "Item not found" });
@@ -228,7 +245,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			_unitOfWork.Save();
 
 			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
-				u => u.ApplicationUserId == cartFromDb.ApplicationUserId && !u.IsCartClosed,
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId ,
 				includeProperties: "Product"
 			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
 
@@ -243,7 +260,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 		[HttpPost]
 		public IActionResult Remove(int cartId)
 		{
-			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId && !u.IsCartClosed);
+			var cartFromDb = _unitOfWork.ShoppingCartRepo.Get(u => u.Id == cartId );
 			if (cartFromDb == null)
 			{
 				return Json(new { success = false, message = "Item not found" });
@@ -253,7 +270,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			_unitOfWork.Save();
 
 			var updatedCartTotal = _unitOfWork.ShoppingCartRepo.GetAll(
-				u => u.ApplicationUserId == cartFromDb.ApplicationUserId && !u.IsCartClosed,
+				u => u.ApplicationUserId == cartFromDb.ApplicationUserId ,
 				includeProperties: "Product"
 			).Sum(c => c.Count * getPriceBasedOnQuantity(c));
 
