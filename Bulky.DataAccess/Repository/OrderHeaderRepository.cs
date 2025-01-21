@@ -35,7 +35,7 @@ namespace Bulky.DataAccess.Repository
 				if (!string.IsNullOrEmpty(sessionId)) {
 					orderFromDb.SessionId = sessionId;
 				}
-				if (!string.IsNullOrEmpty(paymentIntentId)) {
+				 if (!string.IsNullOrEmpty(paymentIntentId)) {
 					orderFromDb.PaymentIntentId= paymentIntentId;
 					orderFromDb.PaymentDate = DateTime.Now;
 				}

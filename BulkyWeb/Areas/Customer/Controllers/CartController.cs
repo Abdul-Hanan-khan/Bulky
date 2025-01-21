@@ -83,6 +83,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
 			ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == userID 	, includeProperties: "Product");
 
 			ShoppingCartVM.OrderHeader.OrderDate = System.DateTime.Now;
+			
 			ShoppingCartVM.OrderHeader.ApplicationUserId = userID;
 			ApplicationUser applicationUser = _unitOfWork.ApplicationUserRepo.Get(u => u.Id == userID);
 
