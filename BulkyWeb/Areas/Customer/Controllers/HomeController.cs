@@ -1,6 +1,7 @@
 
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
+using Bulky.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -54,14 +55,10 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
         }
         [HttpPost]
-        [Authorize] // it ensure that user must login. no care about role but ensures login
+        [Authorize] 
         public IActionResult Details(ShoppingCart cart)
         {
-
-
             cart.Id = 0;
-
-            // get userID of the logged int user
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var userID = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
             cart.ApplicationUserId = userID;
@@ -74,14 +71,19 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 // becase i am getting count when product is being loaded
                 existingProudctInCart.Count = cart.Count;
                 _unitOfWork.ShoppingCartRepo.Update(existingProudctInCart);
+                _unitOfWork.Save();
+                
+
             }
             else
             {
                 _unitOfWork.ShoppingCartRepo.Add(cart);
+                _unitOfWork.Save();
+
+                HttpContext.Session.SetInt32(SD.SessionCart,_unitOfWork.ShoppingCartRepo.Get(u=>u.ApplicationUserId == userID).Count);
             }
 
 
-            _unitOfWork.Save();
 
             return RedirectToAction(nameof(Index));
             // return View(cart);

@@ -30,6 +30,9 @@ namespace Bulky.Utilities
 		public const string Payment_Status_Rejected = "Rejected";
 
 
+		public const string SessionCart = "SessionShopingCart";
+
+
 
 
 	}
