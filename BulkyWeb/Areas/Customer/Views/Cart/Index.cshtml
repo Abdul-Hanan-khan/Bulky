@@ -119,11 +119,15 @@
 				event.preventDefault();
 				const cartId = $(this).data("cartid");
 				$.post("/Customer/Cart/Minus", { cartId: cartId }, function (response) {
-					if (response.success) {
+					if (response.success) 
+					{
+						console.log("Server response:", response); // Log full response
+
 						if (response.updatedCount > 0) {
 							$("#item-count-" + cartId).text(response.updatedCount); // Update item count
 						} else {
 							$("#cart-row-" + cartId).remove(); // Remove row if count is 0
+							location.reload();
 						}
 						$("#cart-total").text(response.updatedTotal.toFixed(2)); // Update cart total
 					} else {
@@ -140,6 +144,7 @@
 					if (response.success) {
 						$("#cart-row-" + cartId).remove(); // Remove the item row
 						$("#cart-total").text(response.updatedTotal.toFixed(2)); // Update cart total
+						location.reload();
 					} else {
 						alert(response.message);
 					}
