@@ -193,8 +193,9 @@ namespace BulkyWeb.Areas.Customer.Controllers
                     _unitOfWork.OrderHeaderRepo.UpdateStripePaymentId(id, session.Id, session.PaymentIntentId);
                     _unitOfWork.OrderHeaderRepo.UpdateStatus(id, SD.Status_Approved, SD.Payment_Status_Approved);
                     _unitOfWork.Save();
-
                 }
+
+                HttpContext.Session.Remove(SD.SessionCart);
             }
 
             List<ShoppingCart> shoppingCartsList = _unitOfWork.ShoppingCartRepo.GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
